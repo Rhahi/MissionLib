@@ -1,5 +1,5 @@
 module MissionLib
 
-include("./Entrypoint/Entrypoint.jl")
+include("./entrypoint.jl")
 
 end # module MissionLib

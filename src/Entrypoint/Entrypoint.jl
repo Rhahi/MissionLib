@@ -1,3 +1,0 @@
-module Entrypoint
-
-end
