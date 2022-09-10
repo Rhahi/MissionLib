@@ -207,9 +207,9 @@ version = "1.1.1"
 
 [[deps.SpaceLib]]
 deps = ["Logging", "LoggingExtras", "PhysicalConstants", "PyCall", "TerminalLoggers", "Unitful"]
-git-tree-sha1 = "e5df20b44b7d2b2f420453dae7557dcb091a9020"
+git-tree-sha1 = "26fac28f34e7d4070d811a6d926443294e066a81"
 repo-rev = "main"
-repo-url = "C:\\RAN\\Projects\\rhahi.space\\spacelib.jl\\SpaceLib"
+repo-url = "https://github.com/Rhahi/spacelib.git"
 uuid = "fb1af579-3fc7-4df4-a3e6-ebb5d9b870c9"
 version = "0.1.1"
 
