@@ -1,0 +1,4 @@
+name = "MissionLib"
+uuid = "ea96f1f0-c68a-41d0-9499-02eea714a05d"
+authors = ["Rhahi <git@rhahi.com>"]
+version = "0.1.0"
