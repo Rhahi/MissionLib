@@ -1,21 +1,25 @@
-using KRPC
 using SpaceLib
+using Logging
+import KRPC.Interface.SpaceCenter.Helpers as RC
 
 include("./subroutines.jl")
 
 
-function setup(s::Spacecraft)
-    s.events["stage1"] = Condition()
-    s.events["stage2"] = Condition()
-    s.parts["e0"] = s.ves.parts.with_tag("e0")[1].engine
-    s.parts["e1"] = s.ves.parts.with_tag("e1")[1].engine
-    s.parts["e2"] = s.ves.parts.with_tag("e2")[1].engine
+function setup(sp::Spacecraft)
+    @info "Create blank conditions"
+    sp.events["stage1"] = Condition()
+    sp.events["stage2"] = Condition()
+    parts = RC.Parts(sp.ves)
+    @info "Setup tagged parts"
+    sp.parts["e0"] = RC.WithTag(parts, "e0")[1]
+    sp.parts["e1"] = RC.WithTag(parts, "e1")[1]
+    sp.parts["e2"] = RC.WithTag(parts, "e2")[1]
 end
 
 
-function main(s::Spacecraft)
+function main(sp::Spacecraft)
     @info "Setting up..."
-    setup(s)
+    setup(sp)
     @info "Setup complete"
 
     @info "Schedule stage 0"
@@ -28,9 +32,11 @@ function main(s::Spacecraft)
 end
 
 
-try
-    s = connect_to_spacecraft("SR Test")
-    main(s)
-finally
-    close(s.conn)
+with_logger(ConsoleLogger(LogLevel(-50);))  do
+    spacecraft = connect_to_spacecraft("SR Test")
+    try
+        main(spacecraft)
+    finally
+        close(spacecraft.conn)
+    end
 end

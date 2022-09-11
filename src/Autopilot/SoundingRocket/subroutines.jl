@@ -1,9 +1,11 @@
 using SpaceLib
+using LoggingExtras
+import KRPC.Interface.SpaceCenter.Helpers as RC
 
 
 function stage0(sp::Spacecraft)
     # release clamps and ignite boosters
-    @debug "Staging..."
+    @infov 1 "Staging..."
     Control.stage(sp)
     notify(sp.events["stage1"])
 end
@@ -20,7 +22,7 @@ function stage1(sp::Spacecraft)
     sleep(0.5)
 
     # activate engine
-    e1.active = true
+    RC.Active!(e1, true)
 
     sleep(0.1)
     Control.stage(sp)
