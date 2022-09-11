@@ -12,11 +12,13 @@ end
 
 
 function stage1(sp::Spacecraft)
+    @infov 1 "enter stage 1"
     # get engine part
-    e1 = sp.parts["e1"]
+    e1 = RC.Engine(sp.parts["e1"])
 
     # wait until stage 1 starts
     wait(sp.events["stage1"])
+    @infov 1 "begin stage 1"
 
     # wait until TWR approaches 1, or timeout
     sleep(0.5)

@@ -14,6 +14,8 @@ function setup(sp::Spacecraft)
     sp.parts["e0"] = RC.WithTag(parts, "e0")[1]
     sp.parts["e1"] = RC.WithTag(parts, "e1")[1]
     sp.parts["e2"] = RC.WithTag(parts, "e2")[1]
+    @info "Set throttle"
+    Control.throttle!(sp, 1.0)
 end
 
 
