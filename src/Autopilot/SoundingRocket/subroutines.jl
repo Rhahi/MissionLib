@@ -1,9 +1,10 @@
-using SpaceLib.Timing
+using SpaceLib
 
 
 function stage0(sp::Spacecraft)
     # release clamps and ignite boosters
-    Staging.stage()
+    @debug "Staging..."
+    Control.stage(sp)
     notify(sp.events["stage1"])
 end
 
@@ -16,31 +17,28 @@ function stage1(sp::Spacecraft)
     wait(sp.events["stage1"])
 
     # wait until TWR approaches 1, or timeout
-    wait(@until twr, 1)
+    sleep(0.5)
 
     # activate engine
     e1.active = true
 
-    # decopule boosters
-    wait(@async check_thrust(e1))
-
-    # start monitoring thrust and attitude
-    @async check_attitude(sp)
+    sleep(0.1)
+    Control.stage(sp)
 end
 
 
 function stage2(sp::Spacecraft)
-    # get engine part
-    e2 = sp.ves.parts.with_tags("e2")[1].engine
+    # # get engine part
+    # e2 = sp.ves.parts.with_tags("e2")[1].engine
 
-    # wait until stage1 is almost burnt out
+    # # wait until stage1 is almost burnt out
 
 
-    # activate stage 2
-    e2.active = true
+    # # activate stage 2
+    # e2.active = true
 
-    # separate stage 1
-    Staging.stage()
+    # # separate stage 1
+    # Staging.stage()
 
-    # start monitoring nominal thrust and attitude
+    # # start monitoring nominal thrust and attitude
 end
