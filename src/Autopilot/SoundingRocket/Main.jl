@@ -21,6 +21,7 @@ end
 
 function main(sp::Spacecraft)
     @info "Setting up..."
+    Telemetry.@telemetry "telemetry test" a = 1
     setup(sp)
     @info "Setup complete"
 
@@ -34,11 +35,11 @@ function main(sp::Spacecraft)
 end
 
 
-with_logger(ConsoleLogger(LogLevel(-50);))  do
-    spacecraft = connect_to_spacecraft("SR Test")
-    try
-        main(spacecraft)
-    finally
-        close(spacecraft.conn)
-    end
+toggle_io = Telemetry.toggle_logger!(homedir() * "/spacelib/", "test", LogLevel(-50))
+spacecraft = connect_to_spacecraft("SR Test")
+try
+    main(spacecraft)
+finally
+    toggle_io()
+    close(spacecraft.conn)
 end
