@@ -1,11 +1,14 @@
-using SpaceLib, SpaceLib.Timing, SpaceLib.Telemetry
-using KRPC
-using Logging, LoggingExtras
-using ProgressLogging
-import KRPC.Interface.SpaceCenter as SC
-import KRPC.Interface.SpaceCenter.Helpers as SCH
-import KRPC.Interface.KRPC as KR
+"""
+use SpaceLib.Timing.delay() to test:
+- progresslogging functionality
+- minimum game delay resolution
+- delay precision
 
+The results were used to refine delay() methods.
+"""
+
+using SpaceLib, SpaceLib.Timing
+using Logging, LoggingExtras
 
 
 function my_delay(sp::Spacecraft)
