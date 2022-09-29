@@ -1,48 +1,67 @@
 using SpaceLib
 using LoggingExtras
-import KRPC.Interface.SpaceCenter.Helpers as RC
+using KRPC
+import KRPC.Interface.SpaceCenter.Helpers as SCH
+import KRPC.Interface.SpaceCenter as SC
 
 
 function stage0(sp::Spacecraft)
     # release clamps and ignite boosters
-    @infov 1 "Staging..."
+    @info "Ignition"
     Control.stage(sp)
-    notify(sp.events["stage1"])
+    Timing.delay(sp, 0.5)
+    notify(sp.events[:stage1])
+    Timing.delay(sp, 0.05)
 end
 
 
 function stage1(sp::Spacecraft)
     @infov 1 "enter stage 1"
-    # get engine part
-    e1 = RC.Engine(sp.parts["e1"])
+    e1 = SCH.Engine(sp.parts[:e1])  # get engine part
+    wait(sp.events[:stage1])
 
-    # wait until stage 1 starts
-    wait(sp.events["stage1"])
     @infov 1 "begin stage 1"
-
-    # wait until TWR approaches 1, or timeout
-    sleep(0.5)
-
-    # activate engine
-    RC.Active!(e1, true)
-
-    sleep(0.1)
+    SCH.Active!(e1, true)  # activate engine
+    Timing.delay(sp, 0.5)
     Control.stage(sp)
+
+    Timing.delay(sp, 38.5, "s1")
+    notify(sp.events[:stage2])
 end
 
 
 function stage2(sp::Spacecraft)
-    # # get engine part
-    # e2 = sp.ves.parts.with_tags("e2")[1].engine
+    @infov 1 "enter stage 2"
+    e2 = SCH.Engine(sp.parts[:e2])
+    wait(sp.events[:stage2])
+    @infov 1 "begin stage 2"
 
-    # # wait until stage1 is almost burnt out
-
-
-    # # activate stage 2
-    # e2.active = true
-
-    # # separate stage 1
-    # Staging.stage()
-
-    # # start monitoring nominal thrust and attitude
+    SCH.Active!(e2, true)
+    Timing.delay(sp, 0.5)
+    Control.stage(sp)
 end
+
+
+# function deploy(sp::Spacecraft)
+#     delay_for_value(sp, )
+# end
+
+
+# """Delay with observable, simple strategy"""
+# function delay_for_value(sp::Spacecraft, measurement::Request, target::Number)
+#     start = kerbal(sp.conn, f())
+#     add_stream(sp.conn, (f(),)) do stream
+#         if start > target
+#             for (value,) in stream
+#                 target ≥ value && break
+#                 yield()
+#             end
+#         else
+#             for (value,) in stream
+#                 target ≤ value && break
+#                 yield()
+#             end
+#         end
+#     end
+#     return start
+# end
