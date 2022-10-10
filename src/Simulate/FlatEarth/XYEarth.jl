@@ -2,7 +2,7 @@ using DifferentialEquations
 using StaticArrays
 using LinearAlgebra
 using Geophysics
-
+using Plots
 
 P₀ = pressure(0)
 
@@ -15,7 +15,7 @@ function rhs!(du, u, p, t)
 
     # intermediates
     v = √(v₁^2 + v₂^2)
-    a = (drag(h, a) + thrust(h, t)) / mass(t)
+    a = (drag(h, v) + thrust(h, t)) / mass(t)
 
     # assignment
     du[1] = v₁/v * a
@@ -53,10 +53,19 @@ function mass(t)
 end
 
 
-θ = 90
+θ = 10.
 v₀ = 150.
 τ = (0.0, 300.)
-u₀ = [cosd(θ)*v₀, sind(θ)*v₀, 0., 0., ]
-p = []
+u₀ = [sind(θ)*v₀, cosd(θ)*v₀, 0., 0., ]
 
-prob = ODEProblem(rhs!, u₀, τ, )
+println("problem defined")
+prob = ODEProblem(rhs!, u₀, τ)
+println("begin solving")
+@time sol = solve(prob)
+println("maxh:", max(hcat(sol.u...)[4,:]...))
+println("finx:", sol.u[end][3])
+overall = plot(sol, idxs=[(0, 4), (0, 3)], tspan=τ)
+initial = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, 10))
+overall_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=τ)
+initial_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, 10))
+display(plot(overall, initial, overall_v, initial_v))
