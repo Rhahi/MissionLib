@@ -53,19 +53,35 @@ function mass(t)
 end
 
 
-θ = 10.
-v₀ = 150.
-τ = (0.0, 300.)
-u₀ = [sind(θ)*v₀, cosd(θ)*v₀, 0., 0., ]
+function simulate(θ, v₀, tf=1000.)
+    condition1(u, t, i) = u[4]
+    affect1!(i) = terminate!(i)
+    cb1 = ContinuousCallback(condition1, affect1!)
+    condition2(u, t, i) = u[2]
+    cb2 = ContinuousCallback(condition2, nothing)
 
-println("problem defined")
-prob = ODEProblem(rhs!, u₀, τ)
-println("begin solving")
-@time sol = solve(prob)
-println("maxh:", max(hcat(sol.u...)[4,:]...))
-println("finx:", sol.u[end][3])
-overall = plot(sol, idxs=[(0, 4), (0, 3)], tspan=τ)
-initial = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, 10))
-overall_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=τ)
-initial_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, 10))
-display(plot(overall, initial, overall_v, initial_v))
+    τ = (0.0, tf)
+    u₀ = [sind(θ)*v₀, cosd(θ)*v₀, 0., 1., ]
+    prob = ODEProblem(rhs!, u₀, τ)
+    @time sol = solve(prob, callback=CallbackSet(cb1, cb2))
+    sol
+end
+
+function plot_sol(sol)
+    tf = sol.t[end]
+    println("tf:: ", tf)
+    println("maxh:", max(hcat(sol.u...)[4,:]...))
+    println("finx:", sol.u[end][3])
+    overall = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, tf))
+    initial = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, 10))
+    overall_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, tf))
+    initial_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, 10))
+    plot(overall, initial, overall_v, initial_v)
+end
+
+
+@gif for i=1:40
+    sol = simulate(i, 150.)
+    maxh = round(max(hcat(sol.u...)[4, :]...))
+    plot!(plot_sol(sol), title=string(i, "°, ", maxh))
+end
