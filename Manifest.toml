@@ -613,7 +613,7 @@ uuid = "ef3ab10e-7fda-4108-b977-705223b18434"
 version = "0.3.0"
 
 [[deps.KRPC]]
-deps = ["LightXML", "MacroTools", "ProtoBuf", "Sockets"]
+deps = ["LightXML", "MacroTools", "ProtoBuf", "Sockets", "UUIDs"]
 path = "../KRPC"
 uuid = "7a052949-c101-4ca3-9a7e-43a2532b2fa8"
 version = "0.3.0"
@@ -1239,7 +1239,7 @@ version = "1.0.1"
 
 [[deps.SpaceLib]]
 deps = ["Dates", "KRPC", "Logging", "LoggingExtras", "PhysicalConstants", "ProgressLogging", "TerminalLoggers", "Unitful"]
-path = "~/.julia/dev/SpaceLib"
+path = "../SpaceLib"
 uuid = "fb1af579-3fc7-4df4-a3e6-ebb5d9b870c9"
 version = "0.1.2"
 
