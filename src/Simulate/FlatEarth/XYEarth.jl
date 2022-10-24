@@ -3,6 +3,7 @@ using StaticArrays
 using LinearAlgebra
 using Geophysics
 using Plots
+using Formatting
 
 P₀ = pressure(0)
 
@@ -15,7 +16,7 @@ function rhs!(du, u, p, t)
 
     # intermediates
     v = √(v₁^2 + v₂^2)
-    a = (drag(h, v) + thrust(h, t)) / mass(t)
+    a = (drag(h, v, t) + thrust(h, t)) / mass(t)
 
     # assignment
     du[1] = v₁/v * a
@@ -23,33 +24,6 @@ function rhs!(du, u, p, t)
     du[3] = v₁
     du[4] = v₂
     nothing
-end
-
-
-function drag(h, v)
-    d = 0.04  # drag coefficient
-    A = 0.155  # area, m²
-    v² = v⋅v
-    0.5 * pressure(h) / P₀ * v² * d * A
-end
-
-
-function thrust(h, t)
-    if t > 80
-        return 0.
-    end
-    vac = 13.8e+3  # N
-    asl = 11.7e+3  # N
-    vac - (vac - asl) * pressure(h) / P₀  # N
-end
-
-
-function mass(t)
-    m₀ = 468.  # stage of stage 1
-    m₁ = 215.  # end of stage 1
-    mfr = 1.674 + 4.286 + 0.1783
-    expended_fuel = mfr * t
-    max(m₁, m₀ - expended_fuel)
 end
 
 
@@ -67,21 +41,15 @@ function simulate(θ, v₀, tf=1000.)
     sol
 end
 
+
 function plot_sol(sol)
     tf = sol.t[end]
     println("tf:: ", tf)
-    println("maxh:", max(hcat(sol.u...)[4,:]...))
-    println("finx:", sol.u[end][3])
-    overall = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, tf))
-    initial = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, 10))
-    overall_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, tf))
-    initial_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, 10))
+    println("maxh:", format(max(hcat(sol.u...)[4,:]...)))
+    println("finx:", format(sol.u[end][3]))
+    overall = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, tf), labels=["y" "x"], formatter=:plain)
+    initial = plot(sol, idxs=[(0, 4), (0, 3)], tspan=(0, 10), labels=["y" "x"], formatter=:plain)
+    overall_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, tf), labels=["ẏ" "ẋ"], formatter=:plain)
+    initial_v = plot(sol, idxs=[(0, 2), (0, 1)], tspan=(0, 10), labels=["ẏ" "ẋ"], formatter=:plain)
     plot(overall, initial, overall_v, initial_v)
-end
-
-
-@gif for i=1:40
-    sol = simulate(i, 150.)
-    maxh = round(max(hcat(sol.u...)[4, :]...))
-    plot!(plot_sol(sol), title=string(i, "°, ", maxh))
 end
