@@ -17,7 +17,8 @@ function setup(sp::Spacecraft)
 
         @logprogress 5/steps info="setting up guidance"
         ref = Navigation.ReferenceFrame.BCBF(sp)
-        path = make_path(sp, ref)
+        path = make_path(sp, ref; show=true)
+        isnothing(path) && error("Failed to get guidance")
 
         @logprogress 6/steps info="done"
     end
@@ -31,8 +32,6 @@ function collect_parts(sp)
     sp.parts[:t1] = SCH.WithTag(parts, "t1")[1]
     sp.parts[:t2] = SCH.WithTag(parts, "t2")[1]
     sp.parts[:core] = SCH.WithTag(parts, "core")[1]
-    sp.parts[:cam1] = SCH.WithTag(parts, "cam1")[1]
-    sp.parts[:cam2] = SCH.WithTag(parts, "cam2")[1]
     nothing
 end
 
